@@ -104,7 +104,7 @@ if args.cuda:
 
 all_val = []
 all_test = []
-for i in trange(args.runs, desc='Run Train'):
+for i in trange(args.runs, desc='Run Train', disable=True):
 
     # Model and optimizer
     model = LAGCN(concat=args.concat+1,
@@ -121,7 +121,8 @@ for i in trange(args.runs, desc='Run Train'):
     best = 999999999
     best_model = None
     best_X_list = None
-    for epoch in range(args.epochs):
+    pbar = trange(args.epochs, ncols=125, desc=f'Run {i}')
+    for epoch in pbar:
 
         model.train()
         optimizer.zero_grad()
@@ -149,10 +150,10 @@ for i in trange(args.runs, desc='Run Train'):
         output = torch.log_softmax(output, dim=1)
         loss_val = F.nll_loss(output[idx_val], labels[idx_val])
         
-
-        print('Epoch: {:04d}'.format(epoch+1),
-              'loss_train: {:.4f}'.format(loss_train.item()),
-              'loss_val: {:.4f}'.format(loss_val.item()))
+        if (epoch+1)%(args.epochs//10) == 0:
+            pbar.set_postfix_str('Epoch: {:04d}'.format(epoch+1) +\
+              ' tloss: {:.4f}'.format(loss_train.item()) +\
+              ' vloss: {:.4f}'.format(loss_val.item()))
                 
         if loss_val < best:
             best = loss_val
@@ -169,4 +170,4 @@ for i in trange(args.runs, desc='Run Train'):
     all_val.append(acc_val.item())
     all_test.append(acc_test.item())
 
-print(np.mean(all_val), np.std(all_val), np.mean(all_test), np.std(all_test))
+print(f"val_mu: {np.mean(all_val):.4f}, val_std: {np.std(all_val):.2e}, test_mu: {np.mean(all_test):.4f}, test_std: {np.std(all_test):.2e}")
