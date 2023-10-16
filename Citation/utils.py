@@ -4,6 +4,8 @@ import torch
 import networkx as nx
 import scipy.sparse as sp
 import sys
+import warnings
+warnings.filterwarnings("ignore", RuntimeWarning) # for zero division in line 100
 
 exc_path = sys.path[0]
 
