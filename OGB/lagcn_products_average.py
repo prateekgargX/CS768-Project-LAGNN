@@ -115,7 +115,7 @@ for run in trange(args.runs, desc='Run Train', disable=True):
     model.reset_parameters()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    pbar = trange(args.epochs, ncols=125, desc=f'Run {i}')
+    pbar = trange(args.epochs, ncols=125, desc=f'Run {run}')
     for epoch in pbar:
         model.train()
         optimizer.zero_grad()
