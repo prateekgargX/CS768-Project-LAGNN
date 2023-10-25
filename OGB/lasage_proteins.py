@@ -13,6 +13,16 @@ from ogb.nodeproppred import PygNodePropPredDataset, Evaluator
 
 from logger import Logger
 
+import logging
+logging.basicConfig(filename='output.log',
+                    filemode='a',
+                    format='%(asctime)s [%(levelname)s]: %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+ilogger = logging.getLogger(__file__.split("_")[-1][:-3])
+ilogger.info(f"Logging results for {__file__}")
+
 
 class LASAGE(torch.nn.Module):
     def __init__(self, concat, in_channels, hidden_channels, out_channels, num_layers,
@@ -105,7 +115,7 @@ model = LASAGE(args.concat+1, data.num_features, args.hidden_channels,
                args.dropout).to(device)
 
 evaluator = Evaluator(name='ogbn-proteins')
-logger = Logger(args.runs, args)
+logger = Logger(args.runs, ilogger, args)
 
 criterion = torch.nn.BCEWithLogitsLoss()
 for run in range(args.runs):
