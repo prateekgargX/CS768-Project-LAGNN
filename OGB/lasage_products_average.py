@@ -204,12 +204,21 @@ def test():
 
     return train_acc, val_acc, test_acc
 
+import logging
+logging.basicConfig(filename='output.log',
+                    filemode='a',
+                    format='%(asctime)s [%(levelname)s]: %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+ilogger = logging.getLogger(__file__.split("_")[-1][:-3])
+ilogger.info(f"Logging results for {__file__}")
 
 test_accs = []
 for run in range(1, 11):
-    print('')
-    print(f'Run {run:02d}:')
-    print('')
+    # print('')
+    ilogger.info(f'Run {run:02d}:')
+    # print('')
 
     model.reset_parameters()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
@@ -217,11 +226,11 @@ for run in range(1, 11):
     best_val_acc = final_test_acc = 0
     for epoch in range(1, 21):
         loss, acc = train(epoch)
-        print(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
+        ilogger.info(f'Epoch {epoch:02d}, Loss: {loss:.4f}, Approx. Train: {acc:.4f}')
 
         if epoch > 5:
             train_acc, val_acc, test_acc = test()
-            print(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
+            ilogger.info(f'Train: {train_acc:.4f}, Val: {val_acc:.4f}, '
                   f'Test: {test_acc:.4f}')
 
             if val_acc > best_val_acc:
@@ -230,5 +239,5 @@ for run in range(1, 11):
     test_accs.append(final_test_acc)
 
 test_acc = torch.tensor(test_accs)
-print('============================')
-print(f'Final Test: {test_acc.mean():.4f} ± {test_acc.std():.4f}')
+ilogger.info('============================')
+ilogger.info(f'Final Test: {test_acc.mean():.4f} ± {test_acc.std():.4f}')

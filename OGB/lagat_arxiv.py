@@ -406,6 +406,15 @@ def count_parameters(args):
     model = gen_model(args)
     return sum([p.numel() for p in model.parameters() if p.requires_grad])
 
+import logging
+logging.basicConfig(filename='output.log',
+                    filemode='a',
+                    format='%(asctime)s [%(levelname)s]: %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+ilogger = logging.getLogger(__file__.split("_")[-1][:-3])
+ilogger.info(f"Logging results for {__file__}")
 
 def main():
     global device, n_node_feats, n_classes, epsilon
@@ -574,27 +583,27 @@ def main():
                 final_test_acc = test_acc
             
             if epoch == args.n_epochs or epoch % args.log_every == 0:
-                print(
+                ilogger.info(
                     f"Run: {i + 1}/{args.n_runs}, Epoch: {epoch}/{args.n_epochs}, Average epoch time: {total_time / epoch:.2f}\n"
                     f"Loss: {loss:.4f}, Acc: {acc:.4f}\n"
                     f"Train/Val/Test loss: {train_loss:.4f}/{val_loss:.4f}/{test_loss:.4f}\n"
                     f"Train/Val/Test/Best val/Final test acc: {train_acc:.4f}/{val_acc:.4f}/{test_acc:.4f}/{best_val_acc:.4f}/{final_test_acc:.4f}"
                 )
             
-        print("*" * 50)
-        print(f"Best val acc: {best_val_acc}, Final test acc: {final_test_acc}")
-        print("*" * 50)
+        ilogger.info("*" * 50)
+        ilogger.info(f"Best val acc: {best_val_acc}, Final test acc: {final_test_acc}")
+        ilogger.info("*" * 50)
 
         val_accs.append(best_val_acc)
         test_accs.append(final_test_acc)
 
-    print(args)
-    print(f"Runned {args.n_runs} times")
-    print("Val Accs:", val_accs)
-    print("Test Accs:", test_accs)
-    print(f"Average val accuracy: {np.mean(val_accs)} ± {np.std(val_accs)}")
-    print(f"Average test accuracy: {np.mean(test_accs)} ± {np.std(test_accs)}")
-    print(f"Number of params: {count_parameters(args)}")
+    ilogger.info(args)
+    ilogger.info(f"Ran {args.n_runs} times")
+    ilogger.info("Val Accs:", val_accs)
+    ilogger.info("Test Accs:", test_accs)
+    ilogger.info(f"Average val accuracy: {np.mean(val_accs)} ± {np.std(val_accs)}")
+    ilogger.info(f"Average test accuracy: {np.mean(test_accs)} ± {np.std(test_accs)}")
+    ilogger.info(f"Number of params: {count_parameters(args)}")
 
 
 if __name__ == "__main__":

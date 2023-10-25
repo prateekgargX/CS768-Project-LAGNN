@@ -11,6 +11,7 @@ from ogb.nodeproppred import PygNodePropPredDataset, Evaluator
 
 from logger import Logger
 
+from tqdm import trange
 import logging
 logging.basicConfig(filename='output.log',
                     filemode='a',
@@ -138,10 +139,11 @@ model = LAGCN(args.concat+1, data.num_features, args.hidden_channels,
 evaluator = Evaluator(name='ogbn-arxiv')
 logger = Logger(args.runs, ilogger, args)
 
-for run in range(args.runs):
+for run in trange(args.runs, desc='Run Train', disable=True):
     model.reset_parameters()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    for epoch in range(1, 1 + args.epochs):
+    pbar = trange(args.epochs, ncols=125, desc=f'Run {i}')
+    for epoch in pbar:
         model.train()
         optimizer.zero_grad()
 
@@ -182,7 +184,7 @@ for run in range(args.runs):
             })['acc']
 
             logger.add_result(run, (train_acc, valid_acc, test_acc))
-            print(f'Run: {run + 1:02d}, '
+            ilogger.info(f'Run: {run + 1:02d}, '
                   f'Epoch: {epoch:02d}, '
                   f'Loss: {loss_train.item():.4f}, '
                   f'Train: {100 * train_acc:.2f}%, '
