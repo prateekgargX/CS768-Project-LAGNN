@@ -13,7 +13,7 @@ from dgl import function as fn
 from dgl.ops import edge_softmax
 from dgl.utils import expand_as_pair
 from ogb.nodeproppred import DglNodePropPredDataset, Evaluator
-
+from tqdm import trange
 
 class ElementWiseLinear(nn.Module):
     def __init__(self, size, weight=True, bias=True, inplace=False):
@@ -509,8 +509,9 @@ def main():
         # training loop
         total_time = 0
         best_val_acc, final_test_acc, best_val_loss = 0, 0, float("inf")
+        pbar = trange(1,args.n_epochs+1, ncols=125, desc=f'Run {i}')
+        for epoch in pbar:
 
-        for epoch in range(1, args.n_epochs + 1):
             tic = time.time()
 
             adjust_learning_rate(optimizer, args.lr, epoch)
