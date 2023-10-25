@@ -184,7 +184,7 @@ for run in trange(args.runs, desc='Run Train', disable=True):
             })['acc']
 
             logger.add_result(run, (train_acc, valid_acc, test_acc))
-            ilogger.info(f'Run: {run + 1:02d}, '
+            if epoch % (args.epochs//10) == 0: ilogger.info(f'Run: {run + 1:02d}, '
                   f'Epoch: {epoch:02d}, '
                   f'Loss: {loss_train.item():.4f}, '
                   f'Train: {100 * train_acc:.2f}%, '
