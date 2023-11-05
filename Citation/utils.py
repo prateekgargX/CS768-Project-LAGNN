@@ -37,7 +37,7 @@ def load_data(dataset_str):
     :param dataset_str: Dataset name
     :return: All data input files loaded (as well the training/test data).
     """
-    names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph']
+    names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph', 'text.index']
     objects = []
     for i in range(len(names)):
         with open("{}/data/ind.{}.{}".format(exc_path, dataset_str, names[i]), 'rb') as f:
@@ -47,7 +47,8 @@ def load_data(dataset_str):
                 objects.append(pkl.load(f))
 
     x, y, tx, ty, allx, ally, graph = tuple(objects)
-    test_idx_reorder = parse_index_file("{}/data/ind.{}.test.index".format(exc_path, dataset_str))
+    # test_idx_reorder = parse_index_file("{}/data/ind.{}.test.index".format(exc_path, dataset_str))
+    test_idx_reorder = list(test_idx_reorder)
     test_idx_range = np.sort(test_idx_reorder)
 
     if dataset_str == 'citeseer':
