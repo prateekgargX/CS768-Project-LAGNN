@@ -30,7 +30,7 @@ def generated_generator(args, device, adj, features, labels, features_normalized
 
     x_list, c_list = [], [] 
     for i in trange(adj.shape[0]):
-        x = features[adj[i].nonzero()[1]]
+        x = features[adj[[i], :].nonzero()[1]]
         c = np.tile(features[i], (x.shape[0], 1))
         x_list.append(x)
         c_list.append(c)
