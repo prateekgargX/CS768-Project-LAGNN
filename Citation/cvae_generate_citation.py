@@ -71,4 +71,4 @@ idx_train = torch.LongTensor(idx_train)
 
 _, cvae_model = cvae_pretrain.generated_generator(args, device, adj, features, labels, features_normalized, adj_normalized, idx_train)
 #  We have supplied a pretrained model named "%s.pkl" for the %s dataset. If you wish to use your own pretrained model, please save it with the filename "model/%s_.pkl" to avoid overwriting our provided models.
-torch.save("model/%s_.pkl"%args.dataset)
+torch.save(cvae_model, "model/%s_.pkl"%args.dataset)
