@@ -46,7 +46,7 @@ def load_data(dataset_str):
             else:
                 objects.append(pkl.load(f))
 
-    x, y, tx, ty, allx, ally, graph = tuple(objects)
+    x, y, tx, ty, allx, ally, graph, test_idx_reorder = tuple(objects)
     # test_idx_reorder = parse_index_file("{}/data/ind.{}.test.index".format(exc_path, dataset_str))
     test_idx_reorder = list(test_idx_reorder)
     test_idx_range = np.sort(test_idx_reorder)
