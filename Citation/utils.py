@@ -37,7 +37,7 @@ def load_data(dataset_str):
     :param dataset_str: Dataset name
     :return: All data input files loaded (as well the training/test data).
     """
-    names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph', 'text.index']
+    names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph', 'test.index']
     objects = []
     for i in range(len(names)):
         with open("{}/data/ind.{}.{}".format(exc_path, dataset_str, names[i]), 'rb') as f:
