@@ -35,7 +35,6 @@ parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--n_epochs', type=int, default=100)
 parser.add_argument('--concat', type=int, default=3)
 parser.add_argument('--num_runs', type=int, default=5)
-parser.add_argument('--concat', type=int, default=3)
 parser.add_argument('--samples', type=int, default=4)
 args = parser.parse_args()
 
