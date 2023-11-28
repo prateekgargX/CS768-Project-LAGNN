@@ -51,9 +51,9 @@ idxs = idxs[torch.randperm(len(idxs))]
 idx_train, idx_val, idx_test = idxs[:int(len(idxs)*0.7)], idxs[int(len(idxs)*0.7):int(len(idxs)*0.85)], idxs[int(len(idxs)*0.85):]
 features_normalized = feature_tensor_normalize(big_graph.x)
 # will have to pass the idxs from here
-torch.save(idx_train, f'features/{args.dataset}_idx_train.pt')
-torch.save(idx_val, f'features/{args.dataset}_idx_val.pt')
-torch.save(idx_test, f'features/{args.dataset}_idx_test.pt')
+torch.save(idx_train, f'feature/{args.dataset}_idx_train.pt')
+torch.save(idx_val, f'feature/{args.dataset}_idx_val.pt')
+torch.save(idx_test, f'feature/{args.dataset}_idx_test.pt')
 
 # making features
 x_list, c_list = [], []
