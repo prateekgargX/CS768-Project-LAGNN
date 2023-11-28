@@ -26,6 +26,30 @@ def loss_fn(recon_x, x, mean, log_var):
 
     return (BCE + KLD) / x.size(0)
 
+
+BETA_VAE__LOSS_NUM_ITER = 0 # global variable tracking calls to this function
+def loss_fn_beta(recon_x, x, mean, log_var,
+                    beta = 10,
+                    gamma = 10,
+                    loss_type = "B",
+                    C_max = 25,
+                    C_stop_iter = 10000):
+
+    # TODO: Need to tune default {beta}, {gamma,C_max,C_stop_iter} 
+    C_max = torch.Tensor([C_max], device=x.device)
+    BCE = torch.nn.functional.binary_cross_entropy(recon_x, x, reduction='sum')
+    KLD = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
+
+    if loss_type == "B": 
+        loss =  (BCE + beta*KLD)/ x.size(0)
+    elif loss_type == "H": 
+        C = torch.clamp(C_max/C_stop_iter * BETA_VAE__LOSS_NUM_ITER, 0, C_max.data[0])
+        loss = BCE / x.size(0) + gamma * (KLD / x.size(0) - C).abs()
+    else:
+        raise NotImplementedError
+    return loss
+
+
 def generated_generator(args, device, adj, features, labels, features_normalized, adj_normalized, idx_train):
 
     x_list, c_list = [], [] 
