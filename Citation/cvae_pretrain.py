@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from tqdm import tqdm, trange
 from gcn.models import GCN
-from cvae_models import VAE
+from cvae_models import VAE, ConditionalNormalizingFlow
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 import copy
 
@@ -48,7 +48,6 @@ def loss_fn_beta(recon_x, x, mean, log_var,
     else:
         raise NotImplementedError
     return loss
-
 
 def generated_generator(args, device, adj, features, labels, features_normalized, adj_normalized, idx_train):
 
@@ -105,11 +104,18 @@ def generated_generator(args, device, adj, features, labels, features_normalized
         model_optimizer.step()
     
     # Pretrain
-    cvae = VAE(encoder_layer_sizes=[features.shape[1], 256], 
+    if args.model == 0:
+        cvae = VAE(encoder_layer_sizes=[features.shape[1], 256], 
                latent_size=args.latent_size, 
                decoder_layer_sizes=[256, features.shape[1]],
                conditional=args.conditional, 
                conditional_size=features.shape[1])
+    elif args.model == 1:
+        cvae = ConditionalNormalizingFlow(input_dim=features.shape[1],
+                                        num_flows=6,
+                                        conditional=args.conditional,
+                                        conditional_size=features.shape[1])
+    
     cvae_optimizer = optim.Adam(cvae.parameters(), lr=args.pretrain_lr)
 
     if args.cuda:
@@ -124,11 +130,23 @@ def generated_generator(args, device, adj, features, labels, features_normalized
         for _, (x, c) in enumerate(tqdm(cvae_dataset_dataloader)):
             cvae.train()
             x, c = x.to(device), c.to(device)
-            if args.conditional:
-                recon_x, mean, log_var, _ = cvae(x, c)
-            else:
-                recon_x, mean, log_var, _ = cvae(x)
-            cvae_loss = loss_fn(recon_x, x, mean, log_var)
+
+            if args.model == 0:
+                if args.conditional:
+                    recon_x, mean, log_var, _ = cvae(x, c)
+                else:
+                    recon_x, mean, log_var, _ = cvae(x)
+                cvae_loss = loss_fn(recon_x, x, mean, log_var)
+                
+            elif args.model == 1:
+                if args.conditional:
+                    z, logdet, z_dist = cvae.encode(x,c)            
+                else:
+                    z, logdet, z_dist = cvae.encode(x)  
+                nll = - z_dist.log_prob(z).sum()
+                kldiv = -logdet.sum()
+                cvae_loss = nll + kldiv
+            
 
             cvae_optimizer.zero_grad()
             cvae_loss.backward()

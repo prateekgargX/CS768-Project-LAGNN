@@ -2,6 +2,8 @@
 
 import torch
 import torch.nn as nn
+from torch.distributions import MultivariateNormal
+from torch.distributions.transforms import AffineTransform, SigmoidTransform
 
 
 class VAE(nn.Module):
@@ -110,3 +112,100 @@ class Decoder(nn.Module):
         x = self.MLP(z)
 
         return x
+
+class ConditionalNormalizingFlow(nn.Module):
+    def __init__(self, input_dim, num_flows, conditional=False, conditional_size=0):
+        super(ConditionalNormalizingFlow, self).__init__()
+
+        # TODO: Rename the arguments to match with those of VAEs 
+        self.input_dim = input_dim
+        self.latent_size = input_dim
+        self.num_flows = num_flows
+        self.conditional = conditional
+        if conditional: 
+            assert conditional_size > 0
+
+        self.conditional_size = conditional_size
+
+        # Define the base distribution for the latent space
+        self.base_distribution = MultivariateNormal(torch.zeros(input_dim), torch.eye(input_dim))
+
+        # Initialize the flows
+        self.flows = nn.ModuleList([FlowLayer(input_dim) for _ in range(num_flows)])
+        # list of transformations, defines T
+
+        # Conditional vector, will be passed into base top make it condtional
+
+        if conditional:
+            self.context_encoder = nn.Sequential(
+                nn.Linear(conditional_size, 64),
+                nn.ReLU(),
+                nn.Linear(64, 2 * input_dim)  # Assuming a diagonal covariance matrix
+            )
+
+    def forward(self, c):
+        # same as sampling process
+
+        # Encode the context
+        if self.conditional:
+            context_params = self.context_encoder(c)
+            z_distribution = MultivariateNormal(context_params[:, :self.input_dim],torch.diag_embed(torch.exp(context_params[:, self.input_dim:])))
+        else:
+            z_distribution = MultivariateNormal(torch.zeros(self.input_dim), torch.eye(self.input_dim))
+
+        # Initialize the latent variable using the base distribution
+        z = z_distribution.sample()
+
+        total_log_det = 0
+        # Apply the normalizing flows
+        for flow in self.flows:
+            z, log_det = flow(z) 
+            total_log_det+=log_det
+
+        # Return the latent variable and the log determinant of the transformation
+        return z, total_log_det
+
+    def inference(self,z,c):
+        z_samp,_ = self.forward(c)
+        return z_samp
+    
+    def encode(self,x,c=None):
+        # apply the inverse of the composed transforms
+        z = x*1
+        # Apply the inverse normalizing flows
+        total_log_det = 0
+        for flow in reversed(self.flows):
+            z, log_det = flow.inverse(z)
+            total_log_det+=log_det
+        if self.conditional:
+            context_params = self.context_encoder(c)
+            z_distribution = MultivariateNormal(context_params[:, :self.input_dim],torch.diag_embed(torch.exp(context_params[:, self.input_dim:])))
+        else:
+            z_distribution = MultivariateNormal(torch.zeros(self.input_dim), torch.eye(self.input_dim))
+        return z, total_log_det, z_distribution
+
+
+class FlowLayer(nn.Module):
+    def __init__(self, latent_size):
+        super(FlowLayer, self).__init__()
+
+        self.latent_size = latent_size
+
+        # Define the components of a flow layer
+        self.transform = torch.distributions.transforms.ComposeTransform([
+            AffineTransform(loc=torch.zeros(latent_size), scale=torch.ones(latent_size)),
+            SigmoidTransform()
+        ])
+        # TODO: look for better transformations other than sigmoid, Note: ReLU is not invertible
+
+    def forward(self, x):
+        # Apply the flow layer
+        z = self.transform(x)
+        log_det = self.transform.log_abs_det_jacobian(x, z)
+        return z, log_det
+    
+    def inverse(self, z):
+        x = self.transform.inv(z)
+        log_det = self.transform.log_abs_det_jacobian(x ,z)
+        return x, - log_det
+    
