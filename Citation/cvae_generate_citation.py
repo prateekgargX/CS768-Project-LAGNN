@@ -32,6 +32,7 @@ parser.add_argument('--no-cuda', action='store_true', default=False,
 parser.add_argument('--fastmode', action='store_true', default=False,
                     help='Validate during training pass.')
 parser.add_argument('--seed', type=int, default=42, help='Random seed.')
+parser.add_argument('--model', type=int, default=0, help='Model to train- 0:VAE, 1:Normalising Flow')
 parser.add_argument('--epochs', type=int, default=200,
                     help='Number of epochs to train.')
 parser.add_argument('--lr', type=float, default=0.01,
@@ -42,6 +43,7 @@ parser.add_argument('--hidden', type=int, default=32,
                     help='Number of hidden units.')
 parser.add_argument('--dropout', type=float, default=0.5,
                     help='Dropout rate (1 - keep probability).')
+
 
 args = parser.parse_args()
 
@@ -71,4 +73,9 @@ idx_train = torch.LongTensor(idx_train)
 
 _, cvae_model = cvae_pretrain.generated_generator(args, device, adj, features, labels, features_normalized, adj_normalized, idx_train)
 #  We have supplied a pretrained model named "%s.pkl" for the %s dataset. If you wish to use your own pretrained model, please save it with the filename "model/%s_.pkl" to avoid overwriting our provided models.
-torch.save(cvae_model, "model/%s_.pkl"%args.dataset)
+if args.model == 0:
+    print("Training complete CVAE")
+    torch.save(cvae_model, "model/%s_.pkl"%args.dataset)
+elif args.model == 1:
+    print("Training complete CNF")
+    torch.save(cvae_model, "model_CNF/%s_.pkl"%args.dataset)
