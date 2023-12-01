@@ -112,7 +112,7 @@ def generated_generator(args, device, adj, features, labels, features_normalized
                conditional_size=features.shape[1])
     elif args.model == 1:
         cvae = ConditionalNormalizingFlow(input_dim=features.shape[1],
-                                        num_flows=6,
+                                        num_flows=4,
                                         conditional=args.conditional,
                                         conditional_size=features.shape[1])
     
