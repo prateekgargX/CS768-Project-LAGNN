@@ -167,12 +167,12 @@ def generated_generator(args, device, adj, features, labels, features_normalized
             output = torch.log(total_logits / args.num_models)
             U_score = F.nll_loss(output[idx_train], labels[idx_train]) - cross_entropy / args.num_models
             t += 1
-            print("U Score: ", U_score, " Best Score: ", best_score)
+            print("U Score: ", U_score.item(), " Best Score: ", torch.tensor(best_score).item())
             if U_score > best_score:
                 best_score = U_score
                 if t > args.warmup:
                     cvae_model = copy.deepcopy(cvae)
-                    print("U_score: ", U_score, " t: ", t)
+                    print("U_score: ", U_score.item(), " t: ", t)
                     best_augmented_features = copy.deepcopy(augmented_features)
                     for i in range(args.update_epochs):
                         model.train()
