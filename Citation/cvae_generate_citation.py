@@ -78,4 +78,4 @@ if args.model == 0:
     torch.save(cvae_model, "model/%s_.pkl"%args.dataset)
 elif args.model == 1:
     print("Training complete CNF")
-    torch.save(cvae_model, "model_CNF/%s_.pkl"%args.dataset)
+    torch.save(cvae_model, "model/%s_CNF.pkl"%args.dataset)
