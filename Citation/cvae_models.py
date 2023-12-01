@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from torch.distributions import MultivariateNormal
 from torch.distributions.transforms import AffineTransform, SigmoidTransform
-
+import torch.distributions.transforms as transform
 
 class VAE(nn.Module):
 
@@ -215,3 +215,77 @@ class FlowLayer(nn.Module):
         log_det = self.transform.log_abs_det_jacobian(x ,z)
         return x, - log_det
     
+class Flow(transform.Transform, nn.Module):
+    
+    def __init__(self):
+        transform.Transform.__init__(self)
+        nn.Module.__init__(self)
+    
+    # Init all parameters
+    def init_parameters(self):
+        for param in self.parameters():
+            param.data.uniform_(-0.01, 0.01)
+            
+    # Hacky hash bypass
+    def __hash__(self):
+        return nn.Module.__hash__(self)
+
+
+class PlanarFlow(Flow):
+    def __init__(self, in_features, condition_features):
+        super(PlanarFlow, self).__init__()
+
+        self.u = nn.Parameter(torch.randn(1, in_features))
+        self.w = nn.Parameter(torch.randn(1, in_features))
+        self.b = nn.Parameter(torch.randn(1))
+        self.h = torch.tanh  # Activation function
+
+        # Additional conditioning for planar flow
+        self.condition_layer = nn.Linear(condition_features, in_features)
+
+    def _call(self, z, c):
+        u = self.u
+        w = self.w + self.condition_layer(c) # w is modified for conditioning
+        b = self.b
+
+        zwb = torch.matmul(z, w.t()) + b
+        psi = self.h(zwb)
+        z = z + u * psi
+        return z
+    
+    def log_abs_det_jacobian(self, z, c):
+        u = self.u
+        w = self.w + self.condition_layer(c) # w is modified for conditioning
+        b = self.b
+
+        zwb = torch.matmul(z, w.t()) + b
+        psi = (1 - self.h(zwb)**2) * w
+        det_grad = 1 + torch.mm(psi, u.t())
+        return torch.log(det_grad.abs() + 1e-9)
+
+class ConditionalPlanarNormalizingFlow(nn.Module):
+    def __init__(self, in_features, condition_features, num_flows, density):
+        super(ConditionalPlanarNormalizingFlow, self).__init__()
+        biject = []
+        for _ in range(num_flows):
+            biject.append(PlanarFlow(in_features, condition_features))
+
+        self.transforms = transform.ComposeTransform(biject)
+        self.bijectors = nn.ModuleList(biject)
+        
+        self.base_density = density
+        self.final_density = torch.distributions.TransformedDistribution(density, self.transforms)
+        self.log_det = []
+
+    def forward(self, z, c):
+        # to be interpreted as observed samples to latent space
+        self.log_det = []
+        # Applies series of flows
+        for b in range(len(self.bijectors)):
+            self.log_det.append(self.bijectors[b].log_abs_det_jacobian(z,c))
+            z = self.bijectors[b](z,c)
+        return z, self.log_det
+
+    def inference(self,z,c):
+        return self.transforms.inv()
+
