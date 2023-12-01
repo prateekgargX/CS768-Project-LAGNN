@@ -167,11 +167,12 @@ class ConditionalNormalizingFlow(nn.Module):
 
     def inference(self,z,c):
         z_samp = torch.zeros_like(c)
-        minibatch_size = 32
-        miniloader = torch.utils.data.TensorDataset(c, batch_size=minibatch_size, shuffle=False)
+        minibatch_size = 128
+        miniloader = torch.utils.data.DataLoader(torch.utils.data.TensorDataset(c), batch_size=minibatch_size, shuffle=False)        
         for i,batch in enumerate(miniloader):
-            z_samp_i,_ = self.forward(batch)
-            z_samp[i:i+len(batch)] = z_samp_i 
+            x = batch[0]
+            z_samp_i,_ = self.forward(x)
+            z_samp[i:i+len(x)] = z_samp_i 
         return z_samp
     
     def encode(self,x,c=None):
