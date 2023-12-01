@@ -166,7 +166,12 @@ class ConditionalNormalizingFlow(nn.Module):
         return z, total_log_det
 
     def inference(self,z,c):
-        z_samp,_ = self.forward(c)
+        z_samp = torch.zeros_like(c)
+        minibatch_size = 32
+        miniloader = torch.utils.data.TensorDataset(c, batch_size=minibatch_size, shuffle=False)
+        for i,batch in enumerate(miniloader):
+            z_samp_i,_ = self.forward(batch)
+            z_samp[i:i+len(batch)] = z_samp_i 
         return z_samp
     
     def encode(self,x,c=None):
@@ -193,7 +198,7 @@ class FlowLayer(nn.Module):
 
         # Define the components of a flow layer
         self.transform = torch.distributions.transforms.ComposeTransform([
-            AffineTransform(loc=torch.zeros(latent_size), scale=torch.ones(latent_size)),
+            AffineTransform(loc=torch.zeros(latent_size, device = torch.device("cuda" if torch.cuda.is_available() else "cpu")), scale=torch.ones(latent_size, device = torch.device("cuda" if torch.cuda.is_available() else "cpu"))),
             SigmoidTransform()
         ])
         # TODO: look for better transformations other than sigmoid, Note: ReLU is not invertible
