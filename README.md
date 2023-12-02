@@ -57,6 +57,6 @@ If you want to pre-train yourself, use:
 
 ```sh
 cd Citation
-!python cvae_generate_citation.py --model 1 [other-parameters]
+python cvae_generate_citation.py --model 1 [other-parameters]
 # 0 for CVAE, 1 for CNF
 ```
