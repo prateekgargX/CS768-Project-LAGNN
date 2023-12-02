@@ -1,6 +1,6 @@
 # Local Augmentation for Graph Neural Networks
 
-This repository contains an implementation of ["Local Augmentation for Graph Neural Networks"](https://openreview.net/pdf?id=HOlhtomacz).
+This repository contains experiments done as part of course project for the paper ["Local Augmentation for Graph Neural Networks"](https://openreview.net/pdf?id=HOlhtomacz).
 
 ## Dependencies
 - CUDA 10.2.89
