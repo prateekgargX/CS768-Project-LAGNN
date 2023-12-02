@@ -48,13 +48,3 @@ cd Citation
 !python cvae_generate_citation.py --model 1 [other-parameters]
 # 0 for CVAE, 1 for CNF
 ```
-
-## Citation
-```
-@inproceedings{liu2022local,
-  title={Local augmentation for graph neural networks},
-  author={Liu, Songtao and Ying, Rex and Dong, Hanze and Li, Lanqing and Xu, Tingyang and Rong, Yu and Zhao, Peilin and Huang, Junzhou and Wu, Dinghao},
-  booktitle={International Conference on Machine Learning},
-  year={2022}
-}
-```
