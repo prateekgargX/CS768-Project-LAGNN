@@ -24,6 +24,12 @@ python cvae_generate_products.py --latent_size 10 --pretrain_lr 1e-5 --total_ite
 bash full.sh
 ```
 
+-Additions : 
+1) Graph Classification : 
+CVAE Pretrining : Run cvae_train.py with the appropriate parameters
+Model Training : Run lagin_graphlevel.py with the appropriate parameters (after pretraining the CVAE)
+
+
 ## Citation
 ```
 @inproceedings{liu2022local,
