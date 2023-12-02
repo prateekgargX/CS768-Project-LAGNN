@@ -20,7 +20,7 @@ from tqdm.auto import tqdm, trange
 
 from cvae_pretrain import loss_fn, feature_tensor_normalize
 from cvae_models import VAE
-from gin.models import GIN, LAGIN
+from gcn.gin_models import GIN, LAGIN
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='MUTAG')

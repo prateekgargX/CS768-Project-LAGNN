@@ -22,7 +22,7 @@ import gc
 from utils import load_data, accuracy, normalize_adj, normalize_features, sparse_mx_to_torch_sparse_tensor
 from cvae_models import VAE
 from cvae_pretrain import loss_fn, feature_tensor_normalize
-from gin.models import GIN, LAGIN
+from gcn.gin_models import GIN, LAGIN
 
 
 parser = argparse.ArgumentParser()
