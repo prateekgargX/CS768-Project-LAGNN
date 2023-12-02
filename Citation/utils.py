@@ -41,11 +41,14 @@ def load_data(dataset_str):
     objects = []
     for i in range(len(names)):
         with open("{}/data/ind.{}.{}".format(exc_path, dataset_str, names[i]), 'rb') as f:
-            if sys.version_info > (3, 0):
-                objects.append(pkl.load(f, encoding='latin1'))
-            else:
-                objects.append(pkl.load(f))
-
+            try:
+                if sys.version_info > (3, 0):
+                    objects.append(pkl.load(f, encoding='latin1'))
+                else:
+                    objects.append(pkl.load(f))
+            except:
+                objects.append(parse_index_file("{}/data/ind.{}.test.index".format(exc_path, dataset_str)))
+                
     x, y, tx, ty, allx, ally, graph, test_idx_reorder = tuple(objects)
     # test_idx_reorder = parse_index_file("{}/data/ind.{}.test.index".format(exc_path, dataset_str))
     test_idx_reorder = list(test_idx_reorder)

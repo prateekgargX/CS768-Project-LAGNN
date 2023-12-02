@@ -1,6 +1,6 @@
 # Local Augmentation for Graph Neural Networks
 
-This repository contains an implementation of ["Local Augmentation for Graph Neural Networks"](https://openreview.net/pdf?id=HOlhtomacz).
+This repository contains experiments done as part of course project for the paper ["Local Augmentation for Graph Neural Networks"](https://openreview.net/pdf?id=HOlhtomacz).
 
 ## Dependencies
 - CUDA 10.2.89
@@ -24,12 +24,27 @@ python cvae_generate_products.py --latent_size 10 --pretrain_lr 1e-5 --total_ite
 bash full.sh
 ```
 
-## Citation
+## Additions : 
+1) Graph Classification : @Aziz-Shameem
+   
+CVAE Pretrining : Run cvae_train.py with the appropriate parameters  
+Model Training : Run lagin_graphlevel.py with the appropriate parameters (after pretraining the CVAE)
+
+```sh
+cd Citation
+# for pretraining the CVAE
+python cvae_train.py
+# for training the GIN model
+python lagin_graphlevel.py
 ```
-@inproceedings{liu2022local,
-  title={Local augmentation for graph neural networks},
-  author={Liu, Songtao and Ying, Rex and Dong, Hanze and Li, Lanqing and Xu, Tingyang and Rong, Yu and Zhao, Peilin and Huang, Junzhou and Wu, Dinghao},
-  booktitle={International Conference on Machine Learning},
-  year={2022}
-}
+2) Link Prediction: @BhavyaKohli
+3) Normalizing-Flow Model: @prateekgargx
+
+For semi-supervised setting, we provide two pre-trained generative models: Conditional VAE, and Conditional Normalizing Flow.
+If you want to pre-train yourself, use:
+
+```sh
+cd Citation
+!python cvae_generate_citation.py --model 1 [other-parameters]
+# 0 for CVAE, 1 for CNF
 ```

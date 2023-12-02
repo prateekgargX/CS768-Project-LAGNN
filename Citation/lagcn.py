@@ -23,6 +23,8 @@ parser.add_argument("--concat", type=int, default=4)
 parser.add_argument('--runs', type=int, default=100, help='The number of experiments.')
 
 parser.add_argument('--dataset', default='cora', help='Dataset string.')
+parser.add_argument('--pretrained_model', default='vae', help='pretrained model to use')
+
 parser.add_argument('--seed', type=int, default=42, help='Random seed.')
 parser.add_argument('--epochs', type=int, default=200, help='Number of epochs to train.')
 parser.add_argument('--lr', type=float, default=0.01, help='Initial learning rate.')
@@ -78,7 +80,11 @@ idx_train = torch.LongTensor(idx_train)
 idx_val = torch.LongTensor(idx_val)
 idx_test = torch.LongTensor(idx_test)
 
-cvae_model = torch.load("{}/model/{}.pkl".format(exc_path, args.dataset))
+if args.pretrained_model == "vae":
+    cvae_model = torch.load("{}/model/{}.pkl".format(exc_path, args.dataset))
+if args.pretrained_model == "nf":
+    cvae_model = torch.load("{}/model_CNF/{}.pkl".format(exc_path, args.dataset))
+
 
 def get_augmented_features(concat):
     X_list = []
