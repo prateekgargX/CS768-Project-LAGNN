@@ -38,6 +38,10 @@ python cvae_train.py
 python lagin_graphlevel.py
 ```
 2) Link Prediction: @BhavyaKohli
+
+CVAE Pretraining : (required for LINKXDatasets, optional for retraining Planetoid datasets) run cvae_train_linkx.py or cvae_generate_citation.py with required parameters, for LINKX and Planetoid datasets respectively
+Model Training : Run lagcn_linkpred.py with the appropriate parameters (after pretraining the CVAE)
+
 3) Normalizing-Flow Model: @prateekgargx
 
 For semi-supervised setting, we provide two pre-trained generative models: Conditional VAE, and Conditional Normalizing Flow.
