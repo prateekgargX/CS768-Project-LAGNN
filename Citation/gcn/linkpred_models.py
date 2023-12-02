@@ -6,7 +6,7 @@ from torch_geometric.nn import GCNConv
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-class LAGCN(torch.nn.Module):
+class LPLAGCN(torch.nn.Module):
     def __init__(self, concat, nfeat, nhid, out_ch, dropout):
         super().__init__()
 
@@ -31,5 +31,4 @@ class LAGCN(torch.nn.Module):
     def decode_all(self, z):
         prob_adj = z @ z.t()
         return (prob_adj > 0).nonzero(as_tuple=False).t()
-    
     

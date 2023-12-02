@@ -13,7 +13,7 @@ import cvae_pretrain
 import os
 
 from utils import load_data, accuracy, normalize_adj, normalize_features, sparse_mx_to_torch_sparse_tensor
-from gcn.linkpred_models import LAGCN
+from gcn.linkpred_models import LPLAGCN
 from tqdm import trange
 
 import torch_geometric.datasets as gnnDatasets
@@ -176,7 +176,7 @@ num_runs = args.runs
 
 test_res = []
 for run in range(1,num_runs+1):
-    model = LAGCN(
+    model = LPLAGCN(
         args.concat+1,
         nfeat=features.shape[1],
         nhid=256,
@@ -241,7 +241,7 @@ args.concat = 0
 
 test_res = []
 for run in range(1,num_runs+1):
-    model = LAGCN(
+    model = LPLAGCN(
         args.concat+1,
         nfeat=features.shape[1],
         nhid=256,

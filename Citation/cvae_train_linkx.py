@@ -10,17 +10,17 @@ import gc
 import torch
 import torch.nn.functional as F
 
-from torch_geometric.datasets import TUDataset
-from torch_geometric.loader import DataLoader as gnnDataLoader
 from torch_geometric.utils.convert import from_scipy_sparse_matrix, to_scipy_sparse_matrix
 from torch.utils.data import TensorDataset, DataLoader as nnDataLoader, RandomSampler
-from torch_geometric.logging import init_wandb, log
-from torch_geometric.nn import MLP, GINConv, global_add_pool
 from tqdm.auto import tqdm, trange
 
-from cvae_pretrain import loss_fn, feature_tensor_normalize
+from cvae_pretrain import loss_fn, feature_tensor_normalize, normalize_adj
 from cvae_models import VAE
-from gin.models import GIN, LAGIN
+from utils import sparse_mx_to_torch_sparse_tensor
+
+import scipy.sparse as sp
+
+
 
 from torch_geometric.utils.convert import from_scipy_sparse_matrix, to_scipy_sparse_matrix
 import argparse
@@ -94,9 +94,9 @@ cvae_dataset_sampler = RandomSampler(cvae_dataset)
 cvae_dataset_dataloader = nnDataLoader(cvae_dataset, sampler=cvae_dataset_sampler, batch_size=64)
 from gcn.models import GCN
 
-hidden = 32
+hidden = args.hidden_channels
 dropout = 0.5
-lr = 0.01
+lr = args.lr
 weight_decay = 5e-4
 epochs = 200
 
