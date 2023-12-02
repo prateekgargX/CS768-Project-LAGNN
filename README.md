@@ -40,7 +40,15 @@ python lagin_graphlevel.py
 2) Link Prediction: @BhavyaKohli
 
 CVAE Pretraining : (required for LINKXDatasets, optional for retraining Planetoid datasets) run cvae_train_linkx.py or cvae_generate_citation.py with required parameters, for LINKX and Planetoid datasets respectively
+
 Model Training : Run lagcn_linkpred.py with the appropriate parameters (after pretraining the CVAE)
+```sh
+cd Citation
+# for pretraining the CVAE
+python cvae_train_linkx.py --dataset "reed98"
+# for training the GIN model
+python lagcn_linkpred.py
+```
 
 3) Normalizing-Flow Model: @prateekgargx
 
