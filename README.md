@@ -25,7 +25,7 @@ bash full.sh
 ```
 
 - Additions : 
-1) Graph Classification :   
+1) Graph Classification : @Aziz-Shameem
 CVAE Pretrining : Run cvae_train.py with the appropriate parameters  
 Model Training : Run lagin_graphlevel.py with the appropriate parameters (after pretraining the CVAE)
 
@@ -36,7 +36,14 @@ python cvae_train.py
 # for training the GIN model
 python lagin_graphlevel.py
 ```
+3) For semi-supervised setting, we provide two pre-trained generative models: Conditional VAE, and Conditional Normalizing Flow.
+If you want to pre-train yourself, use:
 
+```sh
+cd Citation
+!python cvae_generate_citation.py --model 1 [other-parameters]
+# 0 for CVAE, 1 for CNF
+```
 
 ## Citation
 ```
