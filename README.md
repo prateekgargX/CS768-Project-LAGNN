@@ -27,7 +27,15 @@ bash full.sh
 - Additions : 
 1) Graph Classification :   
 CVAE Pretrining : Run cvae_train.py with the appropriate parameters  
-Model Training : Run lagin_graphlevel.py with the appropriate parameters (after pretraining the CVAE)  
+Model Training : Run lagin_graphlevel.py with the appropriate parameters (after pretraining the CVAE)
+
+```sh
+cd Citation
+# for pretraining the CVAE
+python cvae_train.py
+# for training the GIN model
+python lagin_graphlevel.py
+```
 
 
 ## Citation
